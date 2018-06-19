@@ -21,12 +21,11 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>com.redhat.patriot</groupId>
-   <artifactId>project-template</artifactId>
+   <artifactId>smart-home-firmware</artifactId>
    <version>1.0-SNAPSHOT</version>
 
-   <name>Patriots template project</name>
-   <description>This project is the default template, which will be used as starter for any other
-      project
+   <name>Smart home firmware</name>
+   <description>Application which directly communicates with house hardware and exposes basic house API.
    </description>
    <licenses>
       <license>
@@ -111,23 +110,55 @@
    </developers>
 
    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <java.level>1.8</java.level>
+
       <org.junit.platform.version>1.2.0</org.junit.platform.version>
       <org.junit.jupiter.version>5.2.0</org.junit.jupiter.version>
       <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+
+      <version.silverware>2.0</version.silverware>
+      <version.silverspoon>0.3.0-SNAPSHOT</version.silverspoon>
+      <version.apache.camel>2.16.1</version.apache.camel>
+      <version.maven.clean>2.5</version.maven.clean>
+      <version.maven.compiler>3.2</version.maven.compiler>
+      <version.maven.exec>1.4.0</version.maven.exec>
+      <version.maven.findbugs>3.0.0</version.maven.findbugs>
+      <version.maven.project.reports>2.7</version.maven.project.reports>
+      <version.maven.jar.plugin>2.4</version.maven.jar.plugin>
+      <version.maven.dependency.plugin>2.8</version.maven.dependency.plugin>
+      <version.fabric8>2.2.0.redhat-079</version.fabric8>
    </properties>
 
    <build>
       <plugins>
-          <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.7.0</version>
-          <configuration>
-              <source>1.8</source>
-              <target>1.8</target>
-          </configuration>
-        </plugin>
-          <plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>${version.maven.dependency.plugin}</version>
+            <executions>
+               <execution>
+                  <id>copy-dependencies</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>copy-dependencies</goal>
+                  </goals>
+                  <configuration>
+                     <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.7.0</version>
+            <configuration>
+               <source>1.8</source>
+               <target>1.8</target>
+            </configuration>
+         </plugin>
+         <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <version>${maven-surefire-plugin.version}</version>
             <dependencies>
@@ -148,27 +179,101 @@
             <artifactId>maven-checkstyle-plugin</artifactId>
             <version>3.0.0</version>
             <executions>
-                <execution>
-                    <id>validate</id>
-                    <phase>validate</phase>
-                    <configuration>
-                        <configLocation>checkstyle.xml</configLocation>
-                       <encoding>UTF-8</encoding>
-                       <consoleOutput>true</consoleOutput>
-                       <failsOnError>true</failsOnError>
-                       <linkXRef>false</linkXRef>
-                   </configuration>
-                   <goals>
-                       <goal>check</goal>
-                   </goals>
+               <execution>
+                  <id>validate</id>
+                  <phase>validate</phase>
+                  <configuration>
+                     <configLocation>checkstyle.xml</configLocation>
+                     <encoding>UTF-8</encoding>
+                     <consoleOutput>true</consoleOutput>
+                     <failsOnError>true</failsOnError>
+                     <linkXRef>false</linkXRef>
+                  </configuration>
+                  <goals>
+                     <goal>check</goal>
+                  </goals>
                </execution>
-           </executions>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>${version.maven.jar.plugin}</version>
+            <configuration>
+               <archive>
+                  <manifest>
+                     <addClasspath>true</addClasspath>
+                     <mainClass>io.silverware.microservices.Boot</mainClass>
+                     <classpathPrefix>lib/</classpathPrefix>
+                  </manifest>
+                  <manifestEntries>
+                  </manifestEntries>
+               </archive>
+            </configuration>
          </plugin>
       </plugins>
    </build>
 
-
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>io.silverware</groupId>
+            <artifactId>microservices-bom</artifactId>
+            <version>${version.silverware}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-stream</artifactId>
+            <version>${version.apache.camel}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-mqtt</artifactId>
+            <version>${version.apache.camel}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jetty</artifactId>
+            <version>${version.apache.camel}</version>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+   
    <dependencies>
+      <dependency>
+         <groupId>io.silverware</groupId>
+         <artifactId>microservices</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.silverware</groupId>
+         <artifactId>camel-microservice-provider</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-jetty</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-mqtt</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-jackson</artifactId>
+         <version>${version.apache.camel}</version>
+      </dependency>
+      <dependency>
+         <groupId>io.silverspoon</groupId>
+         <artifactId>camel-bulldog</artifactId>
+         <version>${version.silverspoon}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.testng</groupId>
+         <artifactId>testng</artifactId>
+         <scope>test</scope>
+      </dependency>
+
       <dependency>
          <groupId>org.junit.jupiter</groupId>
          <artifactId>junit-jupiter-api</artifactId>
