@@ -28,9 +28,9 @@ public class AcRouteBuilder extends IntelligentHomeRouteBuilder {
             .to("direct:ac-off");
 
       from("direct:ac-on")
-            .to("bulldog:gpio?pin=" + config.getFanGpioPin() + "&value=HIGH");
+            .to("bulldog:gpio?pin=" + CONFIG.getFanGpioPin() + "&value=HIGH");
 
       from("direct:ac-off")
-            .to("bulldog:gpio?pin=" + config.getFanGpioPin() + "&value=LOW");
+            .to("bulldog:gpio?pin=" + CONFIG.getFanGpioPin() + "&value=LOW");
    }
 }

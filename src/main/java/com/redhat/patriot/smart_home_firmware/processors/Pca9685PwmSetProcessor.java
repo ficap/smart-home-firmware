@@ -27,7 +27,7 @@ import com.redhat.patriot.smart_home_firmware.Pca9685Util;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class Pca9685PwmSetProcessor implements Processor {
-   private static final Logger log = Logger.getLogger(Pca9685PwmSetProcessor.class);
+   private static final Logger LOG = Logger.getLogger(Pca9685PwmSetProcessor.class);
 
    @Override
    public void process(final Exchange exchange) throws Exception {
@@ -41,10 +41,11 @@ public class Pca9685PwmSetProcessor implements Processor {
       if (valueHeader == null) {
          throw new RuntimeException("'value' header not found! Value 0 - 4095 expected.");
       }
-      String i2cMsg = Pca9685Util.hexMessage(Integer.valueOf(pwmHeader.toString()), Integer.valueOf(valueHeader.toString()));
+      String i2cMsg = Pca9685Util.hexMessage(Integer.valueOf(pwmHeader.toString()),
+                                             Integer.valueOf(valueHeader.toString()));
 
-      if (log.isDebugEnabled()) {
-         log.debug("Sending I2C message: " + i2cMsg);
+      if (LOG.isDebugEnabled()) {
+         LOG.debug("Sending I2C message: " + i2cMsg);
       }
       msg.setBody(i2cMsg);
    }

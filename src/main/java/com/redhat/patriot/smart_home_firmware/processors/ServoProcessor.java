@@ -44,7 +44,9 @@ public class ServoProcessor implements Processor {
 
       final String pca9685Address = config.getServoPca9685Address(servo);
       if (pca9685Address == null) {
-         throw new IllegalArgumentException("The address of PCA9685 for servo #" + servo + " is invalid or not defined in " + Configuration.CONFIG_FILE);
+         throw new IllegalArgumentException("The address of PCA9685 for servo #" +
+                                             servo + " is invalid or not defined in " +
+                                             Configuration.CONFIG_FILE);
       }
       in.setHeader("address", pca9685Address);
       in.setHeader(Pca9685RouteBuilder.PWM_HEADER, config.getServoPwm(servo));
@@ -56,10 +58,13 @@ public class ServoProcessor implements Processor {
       }
       //invert
       intValue = 100 - intValue;
-      in.setHeader(Pca9685RouteBuilder.VALUE_HEADER, (int) map(intValue, 0, 100, PWM_MIN[servo], PWM_MAX[servo]));
+      in.setHeader(Pca9685RouteBuilder.VALUE_HEADER,
+                   (int) map(intValue, 0, 100, PWM_MIN[servo], PWM_MAX[servo]));
    }
 
-   private static double map(final double value, final double imin, final double imax, final double omin, final double omax) {
+   private static double map(final double value,
+                             final double imin, final double imax,
+                             final double omin, final double omax) {
       if (value <= imin) {
          return omin;
       } else if (value >= imax) {

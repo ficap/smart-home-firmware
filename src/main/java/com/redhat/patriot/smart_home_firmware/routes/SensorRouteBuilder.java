@@ -29,17 +29,18 @@ public class SensorRouteBuilder extends IntelligentHomeRouteBuilder {
       final SensorDataProcessor sensorDataProcessor = new SensorDataProcessor();
 
       from(restBaseUri() + "/sensorData?httpMethodRestrict=GET")
-            .setHeader("address", simple(config.getSensorAddress()))
+            .setHeader("address", simple(CONFIG.getSensorAddress()))
             .setBody(simple(""))
             .to("bulldog:i2c?readLength=2")
             .process(sensorDataProcessor)
             .marshal().json(JsonLibrary.Jackson, true);
 
       from("timer:sensorBroadcast?period=5000")
-            .setHeader("address", simple(config.getSensorAddress()))
+            .setHeader("address", simple(CONFIG.getSensorAddress()))
             .to("bulldog:i2c?readLength=2")
             .process(sensorDataProcessor)
             .marshal().json(JsonLibrary.Jackson, true)
-            .to("mqtt:status?publishTopicName=ih/message/weather&userName=mqtt&password=mqtt&host=tcp://" + mqttHost() + "/");
+            .to("mqtt:status?publishTopicName=ih/message/weather" +
+                "&userName=mqtt&password=mqtt&host=tcp://" + mqttHost() + "/");
    }
 }

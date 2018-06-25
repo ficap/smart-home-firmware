@@ -24,13 +24,13 @@ import com.redhat.patriot.smart_home_firmware.Configuration;
  * Created by pmacik on 2.2.16.
  */
 public abstract class IntelligentHomeRouteBuilder extends RouteBuilder {
-   protected Configuration config = Configuration.getInstance();
+   static final Configuration CONFIG = Configuration.getInstance();
 
    public String restBaseUri() {
-      return "jetty:http://" + config.getRestHost();
+      return "jetty:http://" + CONFIG.getRestHost();
    }
 
    public String mqttHost() {
-      return config.getMqttHost();
+      return CONFIG.getMqttHost();
    }
 }

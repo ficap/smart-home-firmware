@@ -33,7 +33,8 @@ public class RfidProcessor implements Processor {
 
       final String rfidAddress = config.getRfidAddress();
       if (rfidAddress == null) {
-         throw new IllegalArgumentException("The address of RFID reader is invalid or not defined in " + Configuration.CONFIG_FILE);
+         throw new IllegalArgumentException("The address of RFID reader is invalid or not defined in " +
+                                            Configuration.CONFIG_FILE);
       }
       in.setHeader("address", rfidAddress);
    }

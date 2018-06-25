@@ -38,7 +38,9 @@ public class RgbLedProcessor implements Processor {
 
       final String pca9685Address = config.getRgbLedPca9685Address(led, channel);
       if (pca9685Address == null) {
-         throw new IllegalArgumentException("The address of PCA9685 for LED #" + led + " is invalid or not defined in " + Configuration.CONFIG_FILE);
+         throw new IllegalArgumentException("The address of PCA9685 for LED #" +
+                                             led + " is invalid or not defined in " +
+                                             Configuration.CONFIG_FILE);
       }
       in.setHeader("address", pca9685Address);
       in.setHeader(Pca9685RouteBuilder.PWM_HEADER, config.getRgbLedPwm(led, channel));

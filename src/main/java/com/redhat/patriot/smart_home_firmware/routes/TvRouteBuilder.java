@@ -22,8 +22,8 @@ import com.redhat.patriot.smart_home_firmware.processors.SoundProcessor;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class TvRouteBuilder extends IntelligentHomeRouteBuilder {
-   final SoundProcessor soundProcessor = new SoundProcessor();
-   final SilenceProcessor silenceProcessor = new SilenceProcessor();
+   private final SoundProcessor soundProcessor = new SoundProcessor();
+   private final SilenceProcessor silenceProcessor = new SilenceProcessor();
 
    @Override
    public void configure() throws Exception {

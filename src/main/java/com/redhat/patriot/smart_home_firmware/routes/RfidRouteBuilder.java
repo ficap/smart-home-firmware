@@ -33,6 +33,7 @@ public class RfidRouteBuilder extends IntelligentHomeRouteBuilder {
                .when(body().isNotEqualTo("00000000"))
                .marshal().json(JsonLibrary.Jackson, true)
                .log("RFID tag: ${body}")
-               .to("mqtt:status?publishTopicName=ih/message/rfidTags&userName=mqtt&password=mqtt&host=tcp://" + mqttHost() + "/");
+               .to("mqtt:status?publishTopicName=ih/message/rfidTags" +
+                   "&userName=mqtt&password=mqtt&host=tcp://" + mqttHost() + "/");
    }
 }

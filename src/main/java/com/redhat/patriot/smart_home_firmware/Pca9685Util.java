@@ -19,7 +19,7 @@ package com.redhat.patriot.smart_home_firmware;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public final class Pca9685Util {
-   public static int PWM_BASE_ADDRESS = 0x06;
+   public static final int PWM_BASE_ADDRESS = 0x06;
 
    public static String pwmAddress(final int pwm) {
       return hex(PWM_BASE_ADDRESS + 4 * pwm);

@@ -74,7 +74,8 @@ public final class Configuration {
                         newChannel.setValue(0);
                         rgbLeds[led].getChannelMap().put(channel, newChannel);
                      }
-                     rgbLeds[led].getChannelMap().get(channel).setPca9685Id(pca9685Id).setPwm(Integer.valueOf(ledCoordinates[1]));
+                     rgbLeds[led].getChannelMap().get(channel)
+                             .setPca9685Id(pca9685Id).setPwm(Integer.valueOf(ledCoordinates[1]));
                   }
                }
             }

@@ -28,9 +28,9 @@ public class FireplaceRouteBuilder extends IntelligentHomeRouteBuilder {
             .to("direct:fireplace-off");
 
       from("direct:fireplace-on")
-            .to("bulldog:gpio?pin=" + config.getFireplaceGpioPin() + "&value=LOW");
+            .to("bulldog:gpio?pin=" + CONFIG.getFireplaceGpioPin() + "&value=LOW");
 
       from("direct:fireplace-off")
-            .to("bulldog:gpio?pin=" + config.getFireplaceGpioPin() + "&value=HIGH");
+            .to("bulldog:gpio?pin=" + CONFIG.getFireplaceGpioPin() + "&value=HIGH");
    }
 }

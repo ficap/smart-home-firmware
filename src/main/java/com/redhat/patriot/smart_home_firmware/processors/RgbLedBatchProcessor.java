@@ -27,7 +27,7 @@ import com.redhat.patriot.smart_home_firmware.Configuration;
  */
 public class RgbLedBatchProcessor implements Processor {
 
-   private static final Logger log = Logger.getLogger(RgbLedBatchProcessor.class);
+   private static final Logger LOG = Logger.getLogger(RgbLedBatchProcessor.class);
 
    public static final String SMOOTH_SET_HEADER = "smooth";
    public static final String BATCH_DELAY_HEADER = "delay";
@@ -52,17 +52,17 @@ public class RgbLedBatchProcessor implements Processor {
          }
          // input message batch line "<led>;<channel(r,g,b)>;<value(0-100)>"
          //TODO: add batch line format validation
-         if (log.isDebugEnabled()) {
-            log.debug("Batch line: " + batchLine);
+         if (LOG.isDebugEnabled()) {
+            LOG.debug("Batch line: " + batchLine);
          }
          final String[] parts = batchLine.split(";");
          final int led = Integer.valueOf(parts[0]);
          final String channel = parts[1];
          final int value = Integer.valueOf(parts[2]);
-         if (log.isTraceEnabled()) {
-            log.trace("LED #: " + led);
-            log.trace("LED channel: " + channel);
-            log.trace("Value: " + value);
+         if (LOG.isTraceEnabled()) {
+            LOG.trace("LED #: " + led);
+            LOG.trace("LED channel: " + channel);
+            LOG.trace("Value: " + value);
          }
          // output message batch line "<i2c address>;<pwm output(0-15)>;<value(0-4095)>"
          if (led == 0xFFFF) {
@@ -88,15 +88,17 @@ public class RgbLedBatchProcessor implements Processor {
    private void batchAppend(StringBuffer pwmBatch, int led, String channel, int value, boolean smooth) {
       final String i2cAddress = config.getRgbLedPca9685Address(led, channel);
       if (i2cAddress == null) {
-         if (log.isWarnEnabled()) {
-            log.warn("I2C address of PCA9685 driver for LED '" + led + "' and channel '" + channel + "' not found in configuration file (" + Configuration.CONFIG_FILE + "), skipping.");
+         if (LOG.isWarnEnabled()) {
+            LOG.warn("I2C address of PCA9685 driver for LED '" + led + "' and channel '" + channel +
+                     "' not found in configuration file (" + Configuration.CONFIG_FILE + "), skipping.");
          }
          return;
       }
       final int rgbLedPwm = config.getRgbLedPwm(led, channel);
       if (rgbLedPwm < 0) {
-         if (log.isWarnEnabled()) {
-            log.warn("PWM output for LED '" + led + "' and channel '" + channel + "' not assigned in configuration file (" + Configuration.CONFIG_FILE + "), skipping.");
+         if (LOG.isWarnEnabled()) {
+            LOG.warn("PWM output for LED '" + led + "' and channel '" + channel +
+                     "' not assigned in configuration file (" + Configuration.CONFIG_FILE + "), skipping.");
          }
          return;
       }
@@ -106,18 +108,20 @@ public class RgbLedBatchProcessor implements Processor {
 
       if (smooth && originalValue != targetValue) {
          final int step = (targetValue - originalValue > 0) ? 1 : -1;
-         if (log.isDebugEnabled()) {
-            log.debug("Smoothing LED's (" + led + ") channel (" + channel + ") value change from " + originalValue + " to " + targetValue);
+         if (LOG.isDebugEnabled()) {
+            LOG.debug("Smoothing LED's (" + led + ") channel (" + channel +
+                      ") value change from " + originalValue + " to " + targetValue);
          }
-         for (int smoothedValue = originalValue + step; smoothedValue != targetValue + step; smoothedValue += step) {
+         for (int smoothedValue = originalValue + step; smoothedValue != targetValue + step;
+              smoothedValue += step) {
             batch.append(i2cAddress); // I2C address
             batch.append(";");
             batch.append(rgbLedPwm); // pwm output
             batch.append(";");
             batch.append((int) (40.95 * smoothedValue)); // pwm value
             batch.append("\n");
-            if (log.isDebugEnabled()) {
-               log.debug("Smoothed value: " + smoothedValue);
+            if (LOG.isDebugEnabled()) {
+               LOG.debug("Smoothed value: " + smoothedValue);
             }
          }
          config.setRgbLedValue(led, channel, value);
@@ -130,8 +134,8 @@ public class RgbLedBatchProcessor implements Processor {
          batch.append("\n");
       }
 
-      if (log.isDebugEnabled()) {
-         log.debug("Appending to PWM batch: [" + batch.toString() + "]");
+      if (LOG.isDebugEnabled()) {
+         LOG.debug("Appending to PWM batch: [" + batch.toString() + "]");
       }
       pwmBatch.append(batch);
    }

@@ -26,7 +26,7 @@ import com.redhat.patriot.smart_home_firmware.Pca9685Util;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class Pca9685PwmSetBatchProcessor implements Processor {
-   private static final Logger log = Logger.getLogger(Pca9685PwmSetBatchProcessor.class);
+   private static final Logger LOG = Logger.getLogger(Pca9685PwmSetBatchProcessor.class);
 
    @Override
    public void process(final Exchange exchange) throws Exception {
@@ -39,14 +39,14 @@ public class Pca9685PwmSetBatchProcessor implements Processor {
       for (String batchLine : batchLines) {
          // input message batch line "<i2c address>;<pwm output(0-15)>;<value(0-4095)>"
          //TODO: add batch line format validation
-         if (log.isDebugEnabled()) {
-            log.debug("Batch line: " + batchLine);
+         if (LOG.isDebugEnabled()) {
+            LOG.debug("Batch line: " + batchLine);
          }
          final String[] parts = batchLine.split(";");
          final String i2cMsg = Pca9685Util.hexMessage(Integer.valueOf(parts[1]), Integer.valueOf(parts[2]));
-         if (log.isTraceEnabled()) {
-            log.trace("I2C Address: " + parts[0]);
-            log.trace("Raw I2C Message: " + i2cMsg);
+         if (LOG.isTraceEnabled()) {
+            LOG.trace("I2C Address: " + parts[0]);
+            LOG.trace("Raw I2C Message: " + i2cMsg);
          }
          // output = "<i2c address>;<raw i2c hex message>"
          if (first) {
