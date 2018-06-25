@@ -1,9 +1,9 @@
-# DevConf 2016 Demo: IoT Gateway for Intelligent Home
+# PatrIoT testing smart-home-firmware
 
 # Building and running
 ```sh
 $ mvn clean package
-$ java -jar target/devconf-2016-intelligent-home-*.jar
+$ java -jar target/smart-home-firmware-*.jar
 ```
 
 ## Public REST API
