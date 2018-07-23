@@ -21,28 +21,28 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultExchange;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.redhat.patriot.smart_home_firmware.Configuration;
 
 /**
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
-public class RgbLedBatchProcessorTest {
+class RgbLedBatchProcessorTest {
    private RgbLedBatchProcessor processor = new RgbLedBatchProcessor();
    private CamelContext ctx = new DefaultCamelContext();
    private Configuration config = Configuration.getInstance();
 
    @Test
-   public void testAllLeds() throws Exception {
+   void testAllLeds() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("65535;r;50");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;2047\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;0;2047\n"
             + "0x00;3;2047\n"
             + "0x00;6;2047\n"
             + "0x00;9;2047\n"
@@ -50,58 +50,58 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testSingleChannel() throws Exception {
+   void testSingleChannel() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("0;r;0");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;0\n");
+      Assertions.assertEquals(msg.getBody(), "0x00;0;0\n");
 
       msg.setBody("0;r;50");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;2047\n");
+      Assertions.assertEquals(msg.getBody(), "0x00;0;2047\n");
 
       msg.setBody("0;r;100");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;4095\n");
+      Assertions.assertEquals(msg.getBody(), "0x00;0;4095\n");
    }
 
    @Test
-   public void testSingleLed() throws Exception {
+   void testSingleLed() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("0;r;0\n0;g;50\n0;b;100");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;0\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;0;0\n"
             + "0x00;1;2047\n"
             + "0x00;2;4095\n");
    }
 
    @Test
-   public void testNonExistingLed() throws Exception {
+   void testNonExistingLed() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("5;r;0\n0;g;50\n0;b;100");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;2047\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;1;2047\n"
             + "0x00;2;4095\n");
    }
 
    @Test
-   public void testAllChannelsAllLeds() throws Exception {
+   void testAllChannelsAllLeds() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("65535;r;0\n65535;g;50\n65535;b;100\n");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;0\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;0;0\n"
             + "0x00;3;0\n"
             + "0x00;6;0\n"
             + "0x00;9;0\n"
@@ -119,14 +119,14 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testRgbLedBatchWithAllLedsAtBegining() throws Exception {
+   void testRgbLedBatchWithAllLedsAtBegining() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("65535;r;50\n0;g;100\n1;g;100");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;2047\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;0;2047\n"
             + "0x00;3;2047\n"
             + "0x00;6;2047\n"
             + "0x00;9;2047\n"
@@ -136,14 +136,14 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testRgbLedBatchWithAllLedsInTheMiddle() throws Exception {
+   void testRgbLedBatchWithAllLedsInTheMiddle() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("0;g;100\n65535;r;50\n1;g;100");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;4095\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;1;4095\n"
             + "0x00;0;2047\n"
             + "0x00;3;2047\n"
             + "0x00;6;2047\n"
@@ -153,7 +153,7 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testRgbLedBatchSmoothedWithDuplicate() throws Exception {
+   void testRgbLedBatchSmoothedWithDuplicate() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
@@ -161,7 +161,7 @@ public class RgbLedBatchProcessorTest {
       msg.setBody("0;g;10\n0;g;10");
       msg.setHeader(RgbLedBatchProcessor.SMOOTH_SET_HEADER, "true");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;40\n" // G 0 -> 10
+      Assertions.assertEquals(msg.getBody(), "0x00;1;40\n" // G 0 -> 10
             + "0x00;1;81\n"
             + "0x00;1;122\n"
             + "0x00;1;163\n"
@@ -175,14 +175,14 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testRgbLedBatchWithAllLedsAtTheEnd() throws Exception {
+   void testRgbLedBatchWithAllLedsAtTheEnd() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
 
       msg.setBody("0;g;100\n1;g;100\n65535;r;50");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;4095\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;1;4095\n"
             + "0x00;4;4095\n"
             + "0x00;0;2047\n"
             + "0x00;3;2047\n"
@@ -192,7 +192,7 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testRgbLedBatchSmoothed() throws Exception {
+   void testRgbLedBatchSmoothed() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
@@ -201,7 +201,7 @@ public class RgbLedBatchProcessorTest {
       msg.setHeader(RgbLedBatchProcessor.SMOOTH_SET_HEADER, "true");
 
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;40\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;1;40\n"
             + "0x00;1;81\n"
             + "0x00;1;122\n"
             + "0x00;1;163\n"
@@ -214,7 +214,7 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testRgbLedBatchSmoothedWithReset() throws Exception {
+   void testRgbLedBatchSmoothedWithReset() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
@@ -222,7 +222,7 @@ public class RgbLedBatchProcessorTest {
       msg.setBody("0;g;10");
       msg.setHeader(RgbLedBatchProcessor.SMOOTH_SET_HEADER, "true");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;40\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;1;40\n"
             + "0x00;1;81\n"
             + "0x00;1;122\n"
             + "0x00;1;163\n"
@@ -235,7 +235,7 @@ public class RgbLedBatchProcessorTest {
 
       msg.setBody("0;g;15");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;450\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;1;450\n"
             + "0x00;1;491\n"
             + "0x00;1;532\n"
             + "0x00;1;573\n"
@@ -245,7 +245,7 @@ public class RgbLedBatchProcessorTest {
 
       msg.setBody("0;g;10");
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;40\n"
+      Assertions.assertEquals(msg.getBody(), "0x00;1;40\n"
             + "0x00;1;81\n"
             + "0x00;1;122\n"
             + "0x00;1;163\n"
@@ -258,7 +258,7 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testRgbLedLongerBatchSmoothed() throws Exception {
+   void testRgbLedLongerBatchSmoothed() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
@@ -267,7 +267,7 @@ public class RgbLedBatchProcessorTest {
       msg.setHeader(RgbLedBatchProcessor.SMOOTH_SET_HEADER, "true");
 
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;1;40\n" // G 0 -> 10
+      Assertions.assertEquals(msg.getBody(), "0x00;1;40\n" // G 0 -> 10
             + "0x00;1;81\n"
             + "0x00;1;122\n"
             + "0x00;1;163\n"
@@ -305,7 +305,7 @@ public class RgbLedBatchProcessorTest {
    }
 
    @Test
-   public void testAllLedsSmoothed() throws Exception {
+   void testAllLedsSmoothed() throws Exception {
       final Exchange ex = new DefaultExchange(ctx);
       final Message msg = ex.getIn();
       config.resetRgbLeds();
@@ -314,7 +314,7 @@ public class RgbLedBatchProcessorTest {
       msg.setHeader(RgbLedBatchProcessor.SMOOTH_SET_HEADER, "true");
 
       processor.process(ex);
-      Assert.assertEquals(msg.getBody(), "0x00;0;40\n" // #0 R 0 -> 10
+      Assertions.assertEquals(msg.getBody(), "0x00;0;40\n" // #0 R 0 -> 10
             + "0x00;0;81\n"
             + "0x00;0;122\n"
             + "0x00;0;163\n"
