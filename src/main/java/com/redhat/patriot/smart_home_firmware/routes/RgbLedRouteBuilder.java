@@ -21,6 +21,26 @@ import com.redhat.patriot.smart_home_firmware.processors.RgbLedBatchProcessor;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class RgbLedRouteBuilder extends IntelligentHomeRouteBuilder {
+    private void configureRESTRoutes() throws Exception {
+        from(restBaseUri() + "/led/batch?httpMethodRestrict=POST")
+                .to("direct:led-set-batch");
+
+        from(restBaseUri() + "/led/setrgb?httpMethodRestrict=GET")
+                .setBody(simple("${header.led};r;${header.r}\n"
+                        + "${header.led};g;${header.g}\n"
+                        + "${header.led};b;${header.b}\n"
+                ))
+                .to("direct:led-set-batch");
+
+        final String allLed = Integer.toString(0xFFFF);
+        from(restBaseUri() + "/led/setrgb/all?httpMethodRestrict=GET")
+                .setBody(simple(allLed + ";r;${header.r}\n"
+                        + allLed + ";g;${header.g}\n"
+                        + allLed + ";b;${header.b}\n"
+                ))
+                .to("direct:led-set-batch");
+    }
+
    @Override
    public void configure() throws Exception {
       final RgbLedBatchProcessor rgbLedBatchProcessor = new RgbLedBatchProcessor();
@@ -31,22 +51,6 @@ public class RgbLedRouteBuilder extends IntelligentHomeRouteBuilder {
             .to("direct:pca9685-pwm-set-batch");
 
       // REST API routes
-      from(restBaseUri() + "/led/batch?httpMethodRestrict=POST")
-            .to("direct:led-set-batch");
-
-      from(restBaseUri() + "/led/setrgb?httpMethodRestrict=GET")
-            .setBody(simple("${header.led};r;${header.r}\n"
-                  + "${header.led};g;${header.g}\n"
-                  + "${header.led};b;${header.b}\n"
-            ))
-            .to("direct:led-set-batch");
-
-      final String allLed = Integer.toString(0xFFFF);
-      from(restBaseUri() + "/led/setrgb/all?httpMethodRestrict=GET")
-            .setBody(simple(allLed + ";r;${header.r}\n"
-                  + allLed + ";g;${header.g}\n"
-                  + allLed + ";b;${header.b}\n"
-            ))
-            .to("direct:led-set-batch");
+      configureRESTRoutes();
    }
 }

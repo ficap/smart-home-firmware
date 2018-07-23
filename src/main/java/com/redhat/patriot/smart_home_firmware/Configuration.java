@@ -51,57 +51,64 @@ public final class Configuration {
       try {
          homeConfig.load(RgbLedProcessor.class.getResourceAsStream(CONFIG_FILE));
 
-         // for all leds in config
-         for (int led = 0; led < RGB_LED_COUNT; led++) {
+         initLeds();
+         initServos();
 
-            for (String channel : channelNames) {
-               final String rgbLedProp = homeConfig.getProperty(LED_PREFIX + "." + led + "." + channel);
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
 
-               if (rgbLedProp != null) {
-                  final String[] ledCoordinates = rgbLedProp.split(";");
-                  final int pca9685Id = Integer.valueOf(ledCoordinates[0]);
-                  final String pca9685Address = homeConfig.getProperty(PCA9685_PREFIX + "." + pca9685Id);
+   private void initLeds() {
+      for (int led = 0; led < RGB_LED_COUNT; led++) {
 
-                  if (pca9685Address != null) {
-                     if (pca9685s[pca9685Id] == null) {
-                        pca9685s[pca9685Id] = pca9685Address;
-                     }
-                     if (rgbLeds[led] == null) {
-                        rgbLeds[led] = new RgbLed();
-                     }
-                     if (!rgbLeds[led].getChannelMap().containsKey(channel)) {
-                        final Channel newChannel = new Channel();
-                        newChannel.setValue(0);
-                        rgbLeds[led].getChannelMap().put(channel, newChannel);
-                     }
-                     rgbLeds[led].getChannelMap().get(channel)
-                             .setPca9685Id(pca9685Id).setPwm(Integer.valueOf(ledCoordinates[1]));
-                  }
-               }
-            }
-         }
+         for (String channel : channelNames) {
+            final String rgbLedProp = homeConfig.getProperty(LED_PREFIX + "." + led + "." + channel);
 
-         for (int servo = 0; servo < SERVO_COUNT; servo++) {
-            final String servoProp = homeConfig.getProperty(SERVO_PREFIX + "." + servo);
-
-            if (servoProp != null) {
-               final String[] servoCoordinates = servoProp.split(";");
-               final int pca9685Id = Integer.valueOf(servoCoordinates[0]);
+            if (rgbLedProp != null) {
+               final String[] ledCoordinates = rgbLedProp.split(";");
+               final int pca9685Id = Integer.valueOf(ledCoordinates[0]);
                final String pca9685Address = homeConfig.getProperty(PCA9685_PREFIX + "." + pca9685Id);
 
                if (pca9685Address != null) {
                   if (pca9685s[pca9685Id] == null) {
                      pca9685s[pca9685Id] = pca9685Address;
                   }
-                  if (servos[servo] == null) {
-                     servos[servo] = new Channel();
+                  if (rgbLeds[led] == null) {
+                     rgbLeds[led] = new RgbLed();
                   }
-                  servos[servo].setPca9685Id(pca9685Id).setPwm(Integer.valueOf(servoCoordinates[1]));
+                  if (!rgbLeds[led].getChannelMap().containsKey(channel)) {
+                     final Channel newChannel = new Channel();
+                     newChannel.setValue(0);
+                     rgbLeds[led].getChannelMap().put(channel, newChannel);
+                  }
+                  rgbLeds[led].getChannelMap().get(channel)
+                        .setPca9685Id(pca9685Id).setPwm(Integer.valueOf(ledCoordinates[1]));
                }
             }
          }
-      } catch (IOException e) {
-         e.printStackTrace();
+      }
+   }
+
+   private void initServos() {
+      for (int servo = 0; servo < SERVO_COUNT; servo++) {
+         final String servoProp = homeConfig.getProperty(SERVO_PREFIX + "." + servo);
+
+         if (servoProp != null) {
+            final String[] servoCoordinates = servoProp.split(";");
+            final int pca9685Id = Integer.valueOf(servoCoordinates[0]);
+            final String pca9685Address = homeConfig.getProperty(PCA9685_PREFIX + "." + pca9685Id);
+
+            if (pca9685Address != null) {
+               if (pca9685s[pca9685Id] == null) {
+                  pca9685s[pca9685Id] = pca9685Address;
+               }
+               if (servos[servo] == null) {
+                  servos[servo] = new Channel();
+               }
+               servos[servo].setPca9685Id(pca9685Id).setPwm(Integer.valueOf(servoCoordinates[1]));
+            }
+         }
       }
    }
 

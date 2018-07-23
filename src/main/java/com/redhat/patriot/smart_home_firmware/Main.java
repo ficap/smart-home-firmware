@@ -17,7 +17,6 @@
 package com.redhat.patriot.smart_home_firmware;
 
 import com.redhat.patriot.smart_home_firmware.routes.*;
-import org.apache.camel.builder.RouteBuilder;
 
 /**
  * This class is intended only for debugging purposes
